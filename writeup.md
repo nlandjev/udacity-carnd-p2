@@ -2,10 +2,6 @@
 
 ## Writeup
 
-### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
-
----
-
 **Build a Traffic Sign Recognition Project**
 
 The goals / steps of this project are the following:
@@ -19,14 +15,8 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/visualization.jpg "Visualization"
-[image2]: ./examples/grayscale.jpg "Grayscaling"
-[image3]: ./examples/random_noise.jpg "Random Noise"
-[image4]: ./examples/placeholder.png "Traffic Sign 1"
-[image5]: ./examples/placeholder.png "Traffic Sign 2"
-[image6]: ./examples/placeholder.png "Traffic Sign 3"
-[image7]: ./examples/placeholder.png "Traffic Sign 4"
-[image8]: ./examples/placeholder.png "Traffic Sign 5"
+[bar-chart-training-set]: ./examples/bar-chart-training-set.png "Class Counts - Training Set"
+[augmented-image]: ./examples/augmented-image.png "Augmented image"
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
@@ -36,67 +26,88 @@ The goals / steps of this project are the following:
 
 #### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one. You can submit your writeup as markdown or pdf. You can use this template as a guide for writing the report. The submission includes the project code.
 
-You're reading it! and here is a link to my [project code](https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project/blob/master/Traffic_Sign_Classifier.ipynb)
+You're reading it! and here is a link to my [project code](https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project/blob/master/Traffic_Sign_Classifier.ipynb) and the exported [html document](https://github.com/nlandjev/udacity-carnd-p2/blob/master/Traffic_Sign_Classifier.html) (which you would have to download as GitHub can't display it inline)
 
 ### Data Set Summary & Exploration
 
 #### 1. Provide a basic summary of the data set. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.
 
-I used the pandas library to calculate summary statistics of the traffic
-signs data set:
+I used numpy to calculate the sizes of the datasets and the shapes of the items in them by selecting the appropriate dimensions returned by the `shape` method of the respective dataset.
 
-* The size of training set is ?
-* The size of the validation set is ?
-* The size of test set is ?
-* The shape of a traffic sign image is ?
-* The number of unique classes/labels in the data set is ?
+* The size of training set is 34799
+* The size of the validation set is 4410 (calculated in the notebook but not printed out)
+* The size of test set is 12630
+* The shape of a traffic sign image is (32, 32, 3)
+* The number of unique classes/labels in the data set is 43
 
 #### 2. Include an exploratory visualization of the dataset.
 
-Here is an exploratory visualization of the data set. It is a bar chart showing how the data ...
+After loading the class names with pandas, I created a 3x3 plot with random images from the training set and their corresponding classes as titles to get an overall feel for the data. I also created two bar charts with the number of samplpes per class for the training and validation sets respectively. This is what the chart for the training set looks like:
 
-![alt text][image1]
+![Class Counts - Training Set][bar-chart-training-set]
+
+The imbalance in the number of items per class suggests adding more images for classes with fewer images might be beneficial (more on that later).
 
 ### Design and Test a Model Architecture
 
 #### 1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, and provide example images of the additional data. Then describe the characteristics of the augmented training set like number of images in the set, number of images for each class, etc.)
 
-As a first step, I decided to convert the images to grayscale because ...
+The only preprocessing step I found to improve the results was normalizing the data by aubtracting the mean and dividing by the standard deviation which were calculated with numpy from the images in the training set.
 
-Here is an example of a traffic sign image before and after grayscaling.
+I considered turning the images to grayscale but I decided against it as I feared too much information would be lost. 
 
-![alt text][image2]
+I also generated augmented images for classes with few samples in the training set but did not include them in the final training as I found they hurt the accuracy and did not help much with overfitting. It is however possible that with more experimentation one can find hyperparameters that will lead to better accuracy. Here is the approach I took with regards to data augmentation (the code is included in the notebook):
 
-As a last step, I normalized the image data because ...
+1) For each class with less than 500 samples - select random images from that class and add augmented versions of them to the training set so that each class has at least 500 samples.
+2) Each augmentation consists three steps, which I implemented with opencv:
+	* rotating the image by a random number of degrees in the range [-15, 15]
+	* shift the image horizontally and vertically by a random number of pixels in the range [-6, 6]
+	* warp the image by performing a perspective transform
 
-I decided to generate additional data because ... 
+Here is an example of an augmented image:
+![Augmented image][augmented-image]
 
-To add more data to the the data set, I used the following techniques because ... 
-
-Here is an example of an original image and an augmented image:
-
-![alt text][image3]
-
-The difference between the original data set and the augmented data set is the following ... 
+The notebook contains plots of a random image showing different augmented versions, obtained by applying one or more of the transofrmations.
 
 
 #### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
-My final model consisted of the following layers:
+My final model is the LeNet architecture with a couple of slight modifications:
+1) Changed number of channels for the input image as I am using all 3 channels
+2) Changed number of outputs to 43 as we are classifying 43 classes.
+3) Add dropout after each layer (after the activation) to reduce overfitting.
 
-| Layer         		|     Description	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| Input         		| 32x32x3 RGB image   							| 
-| Convolution 3x3     	| 1x1 stride, same padding, outputs 32x32x64 	|
-| RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 16x16x64 				|
-| Convolution 3x3	    | etc.      									|
-| Fully connected		| etc.        									|
-| Softmax				| etc.        									|
-|						|												|
-|						|												|
- 
 
+| Layer         		|     Description	        								| 
+|:---------------------:|:---------------------------------------------------------:| 
+| Input         		| 32x32x3 RGB image   							            | 
+|:---------------------:|:---------------------------------------------------------:| 
+| Convolution 5x5     	| 6 kernels, 1x1 stride, valid padding, outputs 28x28x6 	|
+| RELU                  |                                                           |
+| Dropout				| keep_prob=0.8									            |
+| Max pooling	      	| 2x2 stride, valid padding, outputs 14x14x6	            |
+|:---------------------:|:---------------------------------------------------------:|
+| Convolution 5x5     	| 16 kernels, 1x1 stride, valid padding, outputs 10x10x16 	|
+| RELU                  |                                                           |
+| Dropout				| keep_prob=0.8									            |
+| Max pooling	      	| 2x2 stride, valid padding, outputs 5x5x16		            |
+|:---------------------:|:---------------------------------------------------------:| 
+| Flatten				| outputs 400x1												|
+|:---------------------:|:---------------------------------------------------------:| 
+| Dense					| inputs 400, output 120									|
+| RELU                  |                                                           |
+| Dropout				| keep_prob=0.8									            |
+|:---------------------:|:---------------------------------------------------------:| 
+| Dense					| inputs 120, output 84										|
+| RELU                  |                                                           |
+| Dropout				| keep_prob=0.8									            |
+|:---------------------:|:---------------------------------------------------------:| 
+| Dense					| inputs 84, output 43										|
+| RELU                  |                                                           |
+| Dropout				| keep_prob=0.8									            |
+|:---------------------:|:---------------------------------------------------------:| 
+| Softmax               |															|
+|:---------------------:|:---------------------------------------------------------:| 
 
 #### 3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
 
