@@ -167,7 +167,7 @@ To be fair, as the signs are clearly visible in all of the images and the contra
 
 * The fifth image might be difficult to classify because it is shot from the side, distorting the image shape;
 
-* The sixth image might also be difficult to classify because there is a metal border around it;
+* The sixth image might also be difficult to classify because there is a metal border around it.
 
 #### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
 
@@ -186,15 +186,15 @@ Here are the results of the prediction:
 The model was able to correctly guess 4 of the 6 traffic signs, which gives an accuracy of 66.7%. This is less than the accuracy on the test set, which was 93.2%. However, it should be noted that in both cases where the prediction was wrong, the predicted sign is visually similar to the correct sign and the differences are only in the symbol inside the sign - 70 vs 30 km/h, bumps vs bicycle). 
 
 Looking at the precision and recall of the affected classes does not suggest any specific problems related to them - the biggest problem is the 50-60% precision of the following signs
-	* Speed limit (20 km/h)
-	* Go straight or left
-	* Pedestrians
-	* Roundabout mandatory
+* Speed limit (20 km/h)
+* Go straight or left
+* Pedestrians	
+* Roundabout mandatory
 
 as well as the ~40-60% recall for the following signs:
-	* Road narrows on the right
-	* Pedestrians
-	* Beware of ice/snow
+* Road narrows on the right
+* Pedestrians
+* Beware of ice/snow
 
 #### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
 
